@@ -7,13 +7,13 @@ const commonStyles = {
 
     colors: {
         primary: {
-            dark: "#595302",
-            light: "#F2E205",
+            dark: "#183153",
+            light: "#6BB9FF",
         },
 
         secundary: {
-            dark: "#0D0D0D",
-            light: "#BFB304",
+            dark: "#8C3C16",
+            light: "#EA7702",
         },
     },
 };
