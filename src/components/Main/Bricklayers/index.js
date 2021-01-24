@@ -29,7 +29,7 @@ const Bricklayers = (props) => {
                 
                 <View style={[styles(props).containerInfo]}>
                     <View style={[styles(props).containerTextInfo]}>
-                        <Text style={[styles(props).textInfo]}>{`Diária: R$ ${props.dailySalary}`}</Text>
+                        <Text style={[styles(props).textInfo]}>{`Diária: R$ ${props.dailySalary.toFixed(2)}`}</Text>
                         <Text style={[styles(props).textInfo]}>{`Dias Trabalhados: ${props.workedDays}`}</Text>
                     </View>
                 </View>
