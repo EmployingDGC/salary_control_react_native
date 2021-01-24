@@ -36,7 +36,7 @@ const paramsMain = {
     ],
 }
 
-const initialState = {
+const initialStateModal = {
     name: "",
     ddd: "",
     tel: "",
@@ -53,8 +53,8 @@ class Main extends React.Component {
         super(props);
 
         this.state = {
-            modalState: initialState,
-            bricklayers: paramsMain.bricklayers,
+            modalState: initialStateModal,
+            bricklayers: [],
         }
     }
 
@@ -124,21 +124,26 @@ class Main extends React.Component {
     }
 
     onCloseModal = () => {
+        this.state.modalState = initialStateModal;
+
+        console.log(this.state.modalState);
+
         this.setState({
-            modalState: initialState,
+            modalState: initialStateModal,
         });
+
+        console.log(this.state.modalState);
     }
 
-    onUpdatePaid = (bricklayer, pos) => {
-        const allBricklayers = this.state.bricklayers;
-        const id = bricklayer.id;
+    onUpdatePaidModal = (pos) => {
+        const modalState = this.state.modalState;
 
-        allBricklayers[id].workedDays[pos].isPaidOut = true;
+        modalState.workedDays[pos].isPaidOut = true;
 
-        allBricklayers[id].pendingAmount -= 1;
+        modalState.pendingAmount -= 1;
 
         this.setState({
-            bricklayers: allBricklayers,
+            modalState,
         });
     }
 
@@ -150,7 +155,7 @@ class Main extends React.Component {
             
             list_bricklayer.push(
                 <Bricklayers
-                    key={i}
+                    key={`${i}`}
                     name={element.name}
                     dailySalary={element.dailySalary}
                     workedDays={element.workedDays.length}
@@ -172,10 +177,9 @@ class Main extends React.Component {
                         animationType="slide"
                     >
                         <Profile
-                            bricklayers={this.state.bricklayers}
                             bricklayer={this.state.modalState}
                             onUpdateModal={this.onUpdateModal}
-                            onUpdatePaid={this.onUpdatePaid}
+                            onUpdatePaid={this.onUpdatePaidModal}
                             onCloseModal={this.onCloseModal}
                         />
                     </Modal> : null

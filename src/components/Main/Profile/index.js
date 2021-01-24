@@ -13,8 +13,8 @@ import styles from "./styles"
 
 const Profile = (props) => {
 
-    getAmount = (id) => {
-        return props.bricklayers[id].pendingAmount * props.bricklayers[id].dailySalary;
+    getAmount = () => {
+        return props.bricklayer.pendingAmount * props.bricklayer.dailySalary;
     }
 
     renderWorkedDays = (workedDays = [], bricklayer) => {
@@ -33,7 +33,7 @@ const Profile = (props) => {
 
                     <TouchableOpacity
                         activeOpacity={.5}
-                        onPress={() => props.onUpdatePaid(bricklayer, i)}
+                        onPress={() => props.onUpdatePaid(i)}
                         disabled={element.isPaidOut}
                     >
                         <IconMaterialIcons
@@ -73,9 +73,9 @@ const Profile = (props) => {
                             styles(props).textDate,
                             styles(props).textAmount,
                             {
-                                color: getAmount(props.bricklayer.id) === 0 ? "#0A0" : "#F00"
+                                color: getAmount() === 0 ? "#0A0" : "#F00"
                             }
-                        ]}>{`Falta pagar: R$ ${getAmount(props.bricklayer.id).toFixed(2)}`}</Text>
+                        ]}>{`Falta pagar: R$ ${getAmount().toFixed(2)}`}</Text>
                     </ScrollView>
                 </View>
 
