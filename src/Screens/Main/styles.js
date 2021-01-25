@@ -1,6 +1,6 @@
 import { StyleSheet, Dimensions } from "react-native";
 
-const styles = () => {
+const styles = (props) => {
     return StyleSheet.create({
         container: {
             flex: 1,

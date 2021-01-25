@@ -11,29 +11,56 @@ import IconFontAwesome from "react-native-vector-icons/FontAwesome";
 
 import styles from "./styles"
 
-const Profile = (props) => {
+class Profile extends React.Component {
 
-    getAmount = () => {
-        return props.bricklayer.pendingAmount * props.bricklayer.dailySalary;
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            bricklayer: {
+                name: this.props.bricklayer.name,
+                ddd: this.props.bricklayer.ddd,
+                tel: this.props.bricklayer.tel,
+                pendingAmount: this.props.bricklayer.pendingAmount,
+                dailySalary: this.props.bricklayer.dailySalary,
+                workedDays: [...this.props.bricklayer.workedDays],
+            },
+        }
     }
 
-    renderWorkedDays = (workedDays = [], bricklayer) => {
+    getAmount = () => {
+        return this.state.bricklayer.pendingAmount * this.state.bricklayer.dailySalary;
+    }
+
+    onUpdatePaid = (pos) => {
+        const currentBricklayer = { ...this.state.bricklayer };
+
+        currentBricklayer.workedDays[pos].isPaidOut = true;
+
+        currentBricklayer.pendingAmount -= 1;
+
+        this.setState({
+            bricklayer: currentBricklayer,
+        });
+    }
+
+    renderWorkedDays = (workedDays = []) => {
         const listworkedDays = [];
-    
+    console.log(workedDays);
         for (let i = 0; i < workedDays.length; i++) {
             const element = workedDays[i];
             
             listworkedDays.push(
                 <View style={[
-                    styles(props).containerDate,
+                    styles(this.props).containerDate,
                     i === 0 ? {marginTop: 15} : null,
                     i === workedDays.length - 1 ? {marginBottom: 15} : null,
-                ]} key={i}>
-                    <Text style={[styles(props).textDate]}>{element.date}</Text>
+                ]} key={`Profile ${i}`}>
+                    <Text style={[styles(this.props).textDate]}>{element.date}</Text>
 
                     <TouchableOpacity
                         activeOpacity={.5}
-                        onPress={() => props.onUpdatePaid(i)}
+                        onPress={() => this.onUpdatePaid(i)}
                         disabled={element.isPaidOut}
                     >
                         <IconMaterialIcons
@@ -49,62 +76,64 @@ const Profile = (props) => {
         return listworkedDays;
     }
 
-    return (
-
-        <View style={[styles(props).container]}>
-            <View style={[styles(props).containerModal]}>
-                <View style={[styles(props).containerHeader]}>
-                    <Text style={[styles(props).textHeader]}>{props.bricklayer.name}</Text>
-                </View>
-
-                <View style={[styles(props).containerMain]}>
-                    <View style={[styles(props).containerTel]}>
-                        <Text style={[styles(props).subtittleText]}>Tel:</Text>
-
-                        <Text style={[styles(props).contentText]}>{props.bricklayer.ddd}</Text>
-
-                        <Text style={[styles(props).contentText]}>{props.bricklayer.tel}</Text>
+    render() {
+        return (
+            <View style={[styles(this.props).container]}>
+                <View style={[styles(this.props).containerModal]}>
+                    <View style={[styles(this.props).containerHeader]}>
+                        <Text style={[styles(this.props).textHeader]}>{this.state.bricklayer.name}</Text>
                     </View>
 
-                    <ScrollView style={[styles(props).containerScroll]}>
-                        {renderWorkedDays(props.bricklayer.workedDays, props.bricklayer)}
+                    <View style={[styles(this.props).containerMain]}>
+                        <View style={[styles(this.props).containerTel]}>
+                            <Text style={[styles(this.props).subtittleText]}>Tel:</Text>
 
-                        <Text style={[
-                            styles(props).textDate,
-                            styles(props).textAmount,
-                            {
-                                color: getAmount() === 0 ? "#0A0" : "#F00"
-                            }
-                        ]}>{`Falta pagar: R$ ${getAmount().toFixed(2)}`}</Text>
-                    </ScrollView>
-                </View>
+                            <Text style={[styles(this.props).contentText]}>{this.state.bricklayer.ddd}</Text>
 
-                <View style={[styles(props).containerFooter]}>
-                    <TouchableOpacity
-                        onPress={() => props.onCloseModal()}
-                        activeOpacity={.5}
-                    >
-                        <IconFontAwesome
-                            name="times-circle-o"
-                            size={40}
-                            color="#A00"
-                        />
-                    </TouchableOpacity>
+                            <Text style={[styles(this.props).contentText]}>{this.state.bricklayer.tel}</Text>
+                        </View>
 
-                    <TouchableOpacity
-                        onPress={() => props.onUpdateModal(props.bricklayer)}
-                        activeOpacity={.5}
-                    >
-                        <IconFontAwesome
-                            name="check-circle-o"
-                            size={40}
-                            color="#0A0"
-                        />
-                    </TouchableOpacity>
+                        <ScrollView style={[styles(this.props).containerScroll]}>
+                            {this.renderWorkedDays(this.state.bricklayer.workedDays)}
+
+                            <Text style={[
+                                styles(this.props).textDate,
+                                styles(this.props).textAmount,
+                                {
+                                    color: this.getAmount() === 0 ? "#0A0" : "#F00"
+                                }
+                            ]}>{`Falta pagar: R$ ${this.getAmount().toFixed(2)}`}</Text>
+                        </ScrollView>
+                    </View>
+
+                    <View style={[styles(this.props).containerFooter]}>
+                        <TouchableOpacity
+                            onPress={() => this.props.onCloseModal()}
+                            activeOpacity={.5}
+                        >
+                            <IconFontAwesome
+                                name="times-circle-o"
+                                size={40}
+                                color="#A00"
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {}}
+                            activeOpacity={.5}
+                        >
+                            <IconFontAwesome
+                                name="check-circle-o"
+                                size={40}
+                                color="#0A0"
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
-        </View>
-    );
+        )
+    };
 }
 
 export default Profile;
+

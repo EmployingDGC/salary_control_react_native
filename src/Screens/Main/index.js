@@ -24,9 +24,47 @@ const paramsMain = {
             ddd: "27",
             tel: "99794-2740",
             id: 0,
-            dailySalary: 150.817,
-            pendingAmount: 1,
+            dailySalary: 120.249,
+            pendingAmount: 4,
             workedDays: [
+                {
+                    date: "16/02/1997",
+                    isPaidOut: false,
+                },
+                {
+                    date: "16/02/1997",
+                    isPaidOut: false,
+                },
+                {
+                    date: "16/02/1997",
+                    isPaidOut: false,
+                },
+                {
+                    date: "16/02/1997",
+                    isPaidOut: false,
+                },
+            ],
+        },
+        {
+            name: "Mayane de Freitas Pereira Viana",
+            ddd: "27",
+            tel: "99794-2740",
+            id: 1,
+            dailySalary: 150.817,
+            pendingAmount: 3,
+            workedDays: [
+                {
+                    date: "16/02/1997",
+                    isPaidOut: false,
+                },
+                {
+                    date: "16/02/1997",
+                    isPaidOut: false,
+                },
+                {
+                    date: "16/02/1997",
+                    isPaidOut: true,
+                },
                 {
                     date: "16/02/1997",
                     isPaidOut: false,
@@ -36,15 +74,10 @@ const paramsMain = {
     ],
 }
 
-const initialStateModal = {
-    name: "",
-    ddd: "",
-    tel: "",
-    id: 0,
-    dailySalary: 0,
-    pendingAmount: 0,
-    workedDays: [],
-    open: false,
+const initialState = {
+    bricklayers: paramsMain.bricklayers,
+    isOpenModal: false,
+    bricklayersIdModal: null,
 };
 
 class Main extends React.Component {
@@ -53,97 +86,21 @@ class Main extends React.Component {
         super(props);
 
         this.state = {
-            modalState: initialStateModal,
-            bricklayers: [],
+            ...initialState,
         }
     }
 
-    componentDidMount = async () => {
-        const jsonValue = await AsyncStorage.getItem(storageKey);
-        
-        if (jsonValue === null) {
-            this.setState({
-                bricklayers: [],
-            });
-        }
-
-        else {
-            this.setState({
-                bricklayers: JSON.parse(jsonValue),
-            });
-        }
-    }
-
-    setBricklayers = async (bricklayers) => {
-        const jsonValue = JSON.stringify(bricklayers);
-        await AsyncStorage.setItem(storageKey, jsonValue);
-    }
-
-    onUpdateModal = (bricklayer) => {
-        const allBricklayers = this.state.bricklayers;
-        const pos = bricklayer.id;
-
-        allBricklayers[pos] = bricklayer;
-
-        let countPendingAmount = 0;
-
-        for (let i = 0; i < allBricklayers[pos].workedDays.length; i++) {
-            const element = allBricklayers[pos].workedDays[i];
-            
-            if (!element.isPaidOut) {
-                countPendingAmount += 1;
-            }
-        }
-
-        allBricklayers[pos].pendingAmount = countPendingAmount;
-
+    onOpenModal = (id) => {
         this.setState({
-            bricklayers: allBricklayers,
+            isOpenModal: true,
+            bricklayersIdModal: id,
         });
-
-        this.onCloseModal();
-    }
-
-    onOpenModal = (bricklayer, id) => {
-        if (!bricklayer) {
-            return;
-        }
-
-        this.setState({
-            modalState: {
-                name: bricklayer.name,
-                ddd: bricklayer.ddd,
-                tel: bricklayer.tel,
-                id,
-                dailySalary: bricklayer.dailySalary,
-                pendingAmount: bricklayer.pendingAmount,
-                workedDays: bricklayer.workedDays,
-                open: true,
-            },
-        })
     }
 
     onCloseModal = () => {
-        this.state.modalState = initialStateModal;
-
-        console.log(this.state.modalState);
-
         this.setState({
-            modalState: initialStateModal,
-        });
-
-        console.log(this.state.modalState);
-    }
-
-    onUpdatePaidModal = (pos) => {
-        const modalState = this.state.modalState;
-
-        modalState.workedDays[pos].isPaidOut = true;
-
-        modalState.pendingAmount -= 1;
-
-        this.setState({
-            modalState,
+            isOpenModal: initialState.isOpenModal,
+            bricklayersIdModal: initialState.bricklayersIdModal,
         });
     }
 
@@ -155,11 +112,11 @@ class Main extends React.Component {
             
             list_bricklayer.push(
                 <Bricklayers
-                    key={`${i}`}
+                    key={`Bricklayers ${i}`}
                     name={element.name}
                     dailySalary={element.dailySalary}
                     workedDays={element.workedDays.length}
-                    onPress={() => this.onOpenModal(bricklayers[i], i)}
+                    onPress={() => this.onOpenModal(i)}
                 />
             );
         }
@@ -169,26 +126,23 @@ class Main extends React.Component {
 
     render() {
         return (
-            <View style={[styles().container]}>
-                {
-                    this.state.modalState.open ?
-                    <Modal
-                        transparent={true}
-                        animationType="slide"
-                    >
-                        <Profile
-                            bricklayer={this.state.modalState}
-                            onUpdateModal={this.onUpdateModal}
-                            onUpdatePaid={this.onUpdatePaidModal}
-                            onCloseModal={this.onCloseModal}
-                        />
-                    </Modal> : null
-                }
-                <View style={[styles().containerBanner]}>
-                    <ImageBackground style={[styles().banner]} source={banner} />
+            <View style={[styles(this.props).container]}>
+                <Modal
+                    visible={this.state.isOpenModal}
+                    transparent={true}
+                    animationType="slide"
+                >
+                    <Profile
+                        bricklayer={{...this.state.bricklayers[this.state.bricklayersIdModal]}}
+                        onCloseModal={() => this.onCloseModal()}
+                    />
+                </Modal>
+
+                <View style={[styles(this.props).containerBanner]}>
+                    <ImageBackground style={[styles(this.props).banner]} source={banner} />
                 </View>
 
-                <ScrollView style={[styles().containerBricklayer]}>
+                <ScrollView style={[styles(this.props).containerBricklayer]}>
                     {this.renderBricklayers(this.state.bricklayers)}
                 </ScrollView>
             </View>
