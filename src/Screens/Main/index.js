@@ -3,19 +3,21 @@ import {
     View,
     ScrollView,
     ImageBackground,
+    TouchableOpacity,
     Modal,
+    Alert,
 } from "react-native";
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from "react-native-vector-icons/FontAwesome";
 
 import Bricklayers from "../../components/Main/Bricklayers";
 import Profile from "../../components/Main/Profile";
+import NewBricklayer from "../../components/Main/NewBricklayer";
 
 import banner from "../../../assets/images/banner.fw.png";
 
+import commonStyles from "../../commonStyles";
 import styles from "./styles";
-
-const storageKey = "@bricklayers";
 
 const paramsMain = {
     bricklayers: [
@@ -28,19 +30,19 @@ const paramsMain = {
             pendingAmount: 4,
             workedDays: [
                 {
-                    date: "16/02/1997",
+                    date: "25/05/2020",
                     isPaidOut: false,
                 },
                 {
-                    date: "16/02/1997",
+                    date: "26/05/2020",
                     isPaidOut: false,
                 },
                 {
-                    date: "16/02/1997",
+                    date: "27/05/2020",
                     isPaidOut: false,
                 },
                 {
-                    date: "16/02/1997",
+                    date: "28/05/2020",
                     isPaidOut: false,
                 },
             ],
@@ -54,19 +56,19 @@ const paramsMain = {
             pendingAmount: 3,
             workedDays: [
                 {
-                    date: "16/02/1997",
+                    date: "16/02/2020",
                     isPaidOut: false,
                 },
                 {
-                    date: "16/02/1997",
+                    date: "17/02/2020",
                     isPaidOut: false,
                 },
                 {
-                    date: "16/02/1997",
+                    date: "18/02/2020",
                     isPaidOut: true,
                 },
                 {
-                    date: "16/02/1997",
+                    date: "19/02/2020",
                     isPaidOut: false,
                 },
             ],
@@ -76,8 +78,9 @@ const paramsMain = {
 
 const initialState = {
     bricklayers: paramsMain.bricklayers,
-    isOpenModal: false,
-    bricklayersIdModal: null,
+    isOpenModalNewBricklayers: false,
+    isOpenModalBricklayers: false,
+    bricklayersIdModal: 0,
 };
 
 class Main extends React.Component {
@@ -90,16 +93,66 @@ class Main extends React.Component {
         }
     }
 
-    onOpenModal = (id) => {
+    onCloseModalNewBricklayers = () => {
         this.setState({
-            isOpenModal: true,
+            isOpenModalNewBricklayers: false,
+        });
+    }
+
+    onOpenModalNewBricklayers = () => {
+        this.setState({
+            isOpenModalNewBricklayers: true,
+        });
+    }
+
+    onConfirmModalNewBricklayers = (newBricklayer) => {
+        const invalidInformation = {
+            name: !newBricklayer.name ? true : false,
+            ddd: !newBricklayer.ddd || newBricklayer.ddd.length < 2 ? true : false,
+            tel: !newBricklayer.tel || newBricklayer.tel.length < 8 ? true : false,
+            dailySalary: newBricklayer.dailySalary === 0 ? true : false,
+        };
+
+        if (invalidInformation.name || invalidInformation.ddd || invalidInformation.tel || invalidInformation.dailySalary) {
+            Alert.alert(
+                "Dados Inválidos!",
+                `Corrija as informações abaixo e tente novamente.\n\n` +
+                `${invalidInformation.name ? "Nome\n" : ""}` +
+                `${invalidInformation.ddd ? "DDD\n" : ""}` +
+                `${invalidInformation.tel ? "Número de Telefone\n" : ""}` +
+                `${invalidInformation.dailySalary ? "Valor da Diária" : ""}`,
+            );
+
+            return;
+        }
+
+        const bricklayers = [ ...this.state.bricklayers ];
+
+        bricklayers.push(newBricklayer);
+
+        this.setState({
+            bricklayers,
+        });
+
+        this.onCloseModalNewBricklayers();
+    }
+
+    onOpenModalBricklayers = (id) => {
+        this.setState({
+            isOpenModalBricklayers: true,
             bricklayersIdModal: id,
         });
     }
 
-    onCloseModal = () => {
+    onCloseModalBricklayers = (bricklayer) => {
+        const bricklayers = [ ...this.state.bricklayers ];
+        const id = bricklayer.id;
+
+        bricklayers[id] = { ...bricklayer }
+
         this.setState({
-            isOpenModal: initialState.isOpenModal,
+            bricklayers,
+            isOpenModalBricklayers: initialState.isOpenModalBricklayers,
             bricklayersIdModal: initialState.bricklayersIdModal,
         });
     }
@@ -116,7 +169,7 @@ class Main extends React.Component {
                     name={element.name}
                     dailySalary={element.dailySalary}
                     workedDays={element.workedDays.length}
-                    onPress={() => this.onOpenModal(i)}
+                    onPress={() => this.onOpenModalBricklayers(i)}
                 />
             );
         }
@@ -128,18 +181,42 @@ class Main extends React.Component {
         return (
             <View style={[styles(this.props).container]}>
                 <Modal
-                    visible={this.state.isOpenModal}
+                    visible={this.state.isOpenModalBricklayers}
                     transparent={true}
                     animationType="slide"
                 >
                     <Profile
                         bricklayer={{...this.state.bricklayers[this.state.bricklayersIdModal]}}
-                        onCloseModal={() => this.onCloseModal()}
+                        onCloseModal={this.onCloseModalBricklayers}
+                    />
+                </Modal>
+
+                <Modal
+                    visible={this.state.isOpenModalNewBricklayers}
+                    transparent={true}
+                    animationType="slide"
+                >
+                    <NewBricklayer
+                        onCloseModal={this.onCloseModalNewBricklayers}
+                        onConfirmModal={this.onConfirmModalNewBricklayers}
+                        id={this.state.bricklayers.length}
                     />
                 </Modal>
 
                 <View style={[styles(this.props).containerBanner]}>
-                    <ImageBackground style={[styles(this.props).banner]} source={banner} />
+                    <ImageBackground style={[styles(this.props).banner]} source={banner}>
+                        <TouchableOpacity
+                            onPress={this.onOpenModalNewBricklayers}
+                            style={styles({ size: 60 }).buttonAdd}
+                            activeOpacity={.7}
+                        >
+                            <Icon
+                                name="user-plus"
+                                size={40}
+                                color={commonStyles.colors.secundary.light}
+                            />
+                        </TouchableOpacity>
+                    </ImageBackground>
                 </View>
 
                 <ScrollView style={[styles(this.props).containerBricklayer]}>

@@ -7,15 +7,6 @@ import Navigation from "./Navigation";
 import styles from "./styles";
 
 class Routes extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            // umaPropriedade: this.props.umaPropriedade,
-        }
-    }
-
     render() {
         return (
             <View style={[styles().container]}>

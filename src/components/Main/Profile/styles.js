@@ -83,13 +83,21 @@ const styles = (props) => {
         },
 
         textAmount: {
-            marginBottom: 20,
+            marginVertical: 20,
             marginHorizontal: 10,
-            paddingVertical: 10,
+            padding: 10,
             borderRadius: 25,
             textAlign: "center",
             backgroundColor: commonStyles.colors.primary.dark,
-        }
+        },
+
+        button: {
+            borderWidth: 4,
+            width: "30%",
+            alignItems: "center",
+            borderColor: "#0A0",
+            borderRadius: 20,
+        },
     });
 }
 

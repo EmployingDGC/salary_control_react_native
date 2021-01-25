@@ -1,23 +1,24 @@
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 
 import Main from "../Screens/Main";
 
-const TabComponent = createBottomTabNavigator();
+const StackComponent = createStackNavigator();
 
-class Tab extends React.Component {
+class Stack extends React.Component {
     render() {
         return (
-            <TabComponent.Navigator
-                initialRouteName={this.props.initialRouteName}
-                tabBarOptions={this.props.style}
-            >
-                <TabComponent.Screen
-                    name="Main" component={Main}
+            <StackComponent.Navigator initialRouteName={this.props.initialRouteName}>
+                <StackComponent.Screen
+                    name="Main"
+                    component={Main}
+                    options={{
+                        headerShown: false,
+                    }}
                 />
-            </TabComponent.Navigator>
+            </StackComponent.Navigator>
         )
     };
 }
 
-export default Tab;
+export default Stack;

@@ -17,36 +17,55 @@ class Profile extends React.Component {
         super(props);
 
         this.state = {
-            bricklayer: {
-                name: this.props.bricklayer.name,
-                ddd: this.props.bricklayer.ddd,
-                tel: this.props.bricklayer.tel,
-                pendingAmount: this.props.bricklayer.pendingAmount,
-                dailySalary: this.props.bricklayer.dailySalary,
-                workedDays: [...this.props.bricklayer.workedDays],
-            },
+            pendingAmount: this.props.bricklayer.pendingAmount,
+            workedDays: [...this.props.bricklayer.workedDays],
         }
+        
+        this.auxBricklayer = {
+            id: this.props.bricklayer.id,
+            name: this.props.bricklayer.name,
+            ddd: this.props.bricklayer.ddd,
+            tel: this.props.bricklayer.tel,
+            dailySalary: this.props.bricklayer.dailySalary,
+        }
+
+        this.password = "davi@123";
     }
 
     getAmount = () => {
-        return this.state.bricklayer.pendingAmount * this.state.bricklayer.dailySalary;
+        return this.state.pendingAmount * this.auxBricklayer.dailySalary;
     }
 
-    onUpdatePaid = (pos) => {
-        const currentBricklayer = { ...this.state.bricklayer };
+    onTogglePaid = (pos) => {
+        const bricklayer = { ...this.state };
 
-        currentBricklayer.workedDays[pos].isPaidOut = true;
+        bricklayer.workedDays[pos].isPaidOut = !bricklayer.workedDays[pos].isPaidOut;
 
-        currentBricklayer.pendingAmount -= 1;
+        if (bricklayer.workedDays[pos].isPaidOut){
+            bricklayer.pendingAmount -= 1;
+        }
+        else {
+            bricklayer.pendingAmount += 1;
+        }
 
         this.setState({
-            bricklayer: currentBricklayer,
+            pendingAmount: bricklayer.pendingAmount,
+            workedDays: bricklayer.workedDays,
         });
+    }
+
+    onConfirm = () => {
+        const bricklayer = {
+            ...this.state,
+            ...this.auxBricklayer,
+        }
+
+        this.props.onCloseModal(bricklayer);
     }
 
     renderWorkedDays = (workedDays = []) => {
         const listworkedDays = [];
-    console.log(workedDays);
+        
         for (let i = 0; i < workedDays.length; i++) {
             const element = workedDays[i];
             
@@ -60,8 +79,7 @@ class Profile extends React.Component {
 
                     <TouchableOpacity
                         activeOpacity={.5}
-                        onPress={() => this.onUpdatePaid(i)}
-                        disabled={element.isPaidOut}
+                        onPress={() => this.onTogglePaid(i)}
                     >
                         <IconMaterialIcons
                             name="attach-money"
@@ -81,20 +99,20 @@ class Profile extends React.Component {
             <View style={[styles(this.props).container]}>
                 <View style={[styles(this.props).containerModal]}>
                     <View style={[styles(this.props).containerHeader]}>
-                        <Text style={[styles(this.props).textHeader]}>{this.state.bricklayer.name}</Text>
+                        <Text style={[styles(this.props).textHeader]}>{this.auxBricklayer.name}</Text>
                     </View>
 
                     <View style={[styles(this.props).containerMain]}>
                         <View style={[styles(this.props).containerTel]}>
                             <Text style={[styles(this.props).subtittleText]}>Tel:</Text>
 
-                            <Text style={[styles(this.props).contentText]}>{this.state.bricklayer.ddd}</Text>
+                            <Text style={[styles(this.props).contentText]}>{this.auxBricklayer.ddd}</Text>
 
-                            <Text style={[styles(this.props).contentText]}>{this.state.bricklayer.tel}</Text>
+                            <Text style={[styles(this.props).contentText]}>{this.auxBricklayer.tel}</Text>
                         </View>
 
                         <ScrollView style={[styles(this.props).containerScroll]}>
-                            {this.renderWorkedDays(this.state.bricklayer.workedDays)}
+                            {this.renderWorkedDays(this.state.workedDays)}
 
                             <Text style={[
                                 styles(this.props).textDate,
@@ -108,22 +126,12 @@ class Profile extends React.Component {
 
                     <View style={[styles(this.props).containerFooter]}>
                         <TouchableOpacity
-                            onPress={() => this.props.onCloseModal()}
+                            style={[styles(this.props).button]}
+                            onPress={() => this.onConfirm()}
                             activeOpacity={.5}
                         >
                             <IconFontAwesome
-                                name="times-circle-o"
-                                size={40}
-                                color="#A00"
-                            />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            activeOpacity={.5}
-                        >
-                            <IconFontAwesome
-                                name="check-circle-o"
+                                name="check"
                                 size={40}
                                 color="#0A0"
                             />
