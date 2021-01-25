@@ -8,6 +8,8 @@ import {
     Alert,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import Icon from "react-native-vector-icons/FontAwesome";
 
 import Bricklayers from "../../components/Main/Bricklayers";
@@ -19,65 +21,10 @@ import banner from "../../../assets/images/banner.fw.png";
 import commonStyles from "../../commonStyles";
 import styles from "./styles";
 
-const paramsMain = {
-    bricklayers: [
-        {
-            name: "Davi Guizani Carvalho",
-            ddd: "27",
-            tel: "99794-2740",
-            id: 0,
-            dailySalary: 120.249,
-            pendingAmount: 4,
-            workedDays: [
-                {
-                    date: "25/05/2020",
-                    isPaidOut: false,
-                },
-                {
-                    date: "26/05/2020",
-                    isPaidOut: false,
-                },
-                {
-                    date: "27/05/2020",
-                    isPaidOut: false,
-                },
-                {
-                    date: "28/05/2020",
-                    isPaidOut: false,
-                },
-            ],
-        },
-        {
-            name: "Mayane de Freitas Pereira Viana",
-            ddd: "27",
-            tel: "99794-2740",
-            id: 1,
-            dailySalary: 150.817,
-            pendingAmount: 3,
-            workedDays: [
-                {
-                    date: "16/02/2020",
-                    isPaidOut: false,
-                },
-                {
-                    date: "17/02/2020",
-                    isPaidOut: false,
-                },
-                {
-                    date: "18/02/2020",
-                    isPaidOut: true,
-                },
-                {
-                    date: "19/02/2020",
-                    isPaidOut: false,
-                },
-            ],
-        },
-    ],
-}
+const key = "@bricklayers";
 
 const initialState = {
-    bricklayers: paramsMain.bricklayers,
+    bricklayers: [],
     isOpenModalNewBricklayers: false,
     isOpenModalBricklayers: false,
     bricklayersIdModal: 0,
@@ -91,6 +38,22 @@ class Main extends React.Component {
         this.state = {
             ...initialState,
         }
+    }
+
+    componentDidMount = async () => {
+        const stringStorage = await AsyncStorage.getItem(key)
+        
+        const bricklayers = JSON.parse(stringStorage) || [];
+
+        this.setState({
+            bricklayers,
+        });
+    }
+
+    saveOnStorage = async () => {
+        // const storage = JSON.stringify(this.state.bricklayers);
+
+        // await AsyncStorage.setItem(key, storage);
     }
 
     onCloseModalNewBricklayers = () => {
@@ -134,6 +97,8 @@ class Main extends React.Component {
             bricklayers,
         });
 
+        this.saveOnStorage();
+
         this.onCloseModalNewBricklayers();
     }
 
@@ -155,6 +120,8 @@ class Main extends React.Component {
             isOpenModalBricklayers: initialState.isOpenModalBricklayers,
             bricklayersIdModal: initialState.bricklayersIdModal,
         });
+
+        this.saveOnStorage();
     }
 
     renderBricklayers = (bricklayers = []) => {
