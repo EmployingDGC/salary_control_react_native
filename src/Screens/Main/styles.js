@@ -37,6 +37,13 @@ const styles = (props) => {
             margin: 10,
         },
 
+        textEmpty: {
+            textAlign: "center",
+            color: commonStyles.colors.primary.dark,
+            fontFamily: commonStyles.fonts.tittle,
+            fontSize: 20,
+        },
+
         banner: {
             flex: 1,
         },

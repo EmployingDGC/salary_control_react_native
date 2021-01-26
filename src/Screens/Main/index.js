@@ -5,6 +5,7 @@ import {
     ImageBackground,
     TouchableOpacity,
     Modal,
+    Text,
     Alert,
 } from "react-native";
 
@@ -57,9 +58,9 @@ class Main extends React.Component {
     }
 
     saveOnStorage = async () => {
-        // const storage = JSON.stringify(this.state.bricklayers);
+        const storage = JSON.stringify(this.state.bricklayers);
 
-        // await AsyncStorage.setItem(key, storage);
+        await AsyncStorage.setItem(key, storage);
     }
 
     onCloseModalNewBricklayers = () => {
@@ -137,9 +138,7 @@ class Main extends React.Component {
 
         this.setState({
             bricklayers,
-        });
-
-        this.saveOnStorage();
+        }, this.saveOnStorage);
     }
 
     renderTrash = (id) => {
@@ -261,7 +260,17 @@ class Main extends React.Component {
                 </View>
 
                 <ScrollView style={[styles(this.props).containerBricklayer]}>
-                    {this.renderBricklayers(this.state.bricklayers)}
+                    { this.state.bricklayers.length === 0 ?
+                        <TouchableOpacity
+                            activeOpacity={.5}
+                            onPress={this.onOpenModalNewBricklayers}
+                        >
+                            <Text style={[styles(this.props).textEmpty]}>
+                                {"Clique aqui para adicionar seu primeiro funcionário ..."}
+                            </Text>
+                        </TouchableOpacity> : null
+                    }
+                    { this.renderBricklayers(this.state.bricklayers) }
                 </ScrollView>
             </View>
         )
