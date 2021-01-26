@@ -18,6 +18,11 @@ const styles = (props) => {
             padding: 10,
         },
 
+        containerTrash: {
+            justifyContent: "center",
+            marginBottom: 10,
+        },
+
         buttonAdd: {
             justifyContent: "center",
             alignItems: "center",
@@ -38,6 +43,17 @@ const styles = (props) => {
 
         buttonAlert: {
             fontFamily: commonStyles.fonts.subtittle,
+        },
+
+        trash: {
+            backgroundColor: "#A00",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 30,
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            margin: 5,
         },
     });
 }

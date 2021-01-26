@@ -12,6 +12,8 @@ target 'salary_control' do
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   target 'salary_controlTests' do
     inherit! :complete
     # Pods for testing

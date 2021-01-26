@@ -8,7 +8,7 @@ const styles = (props) => {
             padding: 20,
             borderWidth: 4,
             borderColor: commonStyles.colors.secundary.light,
-            backgroundColor: `${commonStyles.colors.primary.light}7C`,
+            backgroundColor: commonStyles.colors.primary.light,
             marginBottom: 10,
             borderRadius: 20,
         },

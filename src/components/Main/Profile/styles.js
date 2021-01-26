@@ -55,6 +55,11 @@ const styles = (props) => {
             justifyContent: "space-around",
         },
 
+        containerButtonAddDay: {
+            alignItems: "center",
+            marginTop: 15,
+        },
+
         textHeader: {
             textAlign: "center",
             fontSize: 30,
@@ -91,7 +96,7 @@ const styles = (props) => {
             backgroundColor: commonStyles.colors.primary.dark,
         },
 
-        button: {
+        buttonConfirm: {
             borderWidth: 4,
             width: "30%",
             alignItems: "center",

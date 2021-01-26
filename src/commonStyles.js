@@ -8,7 +8,7 @@ const commonStyles = {
     colors: {
         primary: {
             dark: "#183153",
-            light: "#6BB9FF",
+            light: "#B0D6F8",
         },
 
         secundary: {

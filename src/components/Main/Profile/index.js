@@ -2,6 +2,7 @@ import React from "react";
 import {
     View,
     Text,
+    Alert,
     ScrollView,
     TouchableOpacity,
 } from "react-native";
@@ -9,6 +10,9 @@ import {
 import IconMaterialIcons from "react-native-vector-icons/MaterialIcons";
 import IconFontAwesome from "react-native-vector-icons/FontAwesome";
 
+import { dateFormated } from "../../../commonFunctions";
+
+import commonStyles from "../../../commonStyles";
 import styles from "./styles"
 
 class Profile extends React.Component {
@@ -28,8 +32,6 @@ class Profile extends React.Component {
             tel: this.props.bricklayer.tel,
             dailySalary: this.props.bricklayer.dailySalary,
         }
-
-        this.password = "davi@123";
     }
 
     getAmount = () => {
@@ -39,14 +41,20 @@ class Profile extends React.Component {
     onTogglePaid = (pos) => {
         const bricklayer = { ...this.state };
 
-        bricklayer.workedDays[pos].isPaidOut = !bricklayer.workedDays[pos].isPaidOut;
-
-        if (bricklayer.workedDays[pos].isPaidOut){
-            bricklayer.pendingAmount -= 1;
-        }
-        else {
+        if (bricklayer.workedDays[pos].isPaidOut) {
+            if (!this.props.isRoot) {
+                this.props.onToggleModalAuth();
+                return;
+            }
+            
             bricklayer.pendingAmount += 1;
         }
+        else {
+            bricklayer.pendingAmount -= 1;
+        }
+
+        bricklayer.workedDays[pos].isPaidOut = !bricklayer.workedDays[pos].isPaidOut;
+
 
         this.setState({
             pendingAmount: bricklayer.pendingAmount,
@@ -94,6 +102,34 @@ class Profile extends React.Component {
         return listworkedDays;
     }
 
+    addDay = () => {
+        const workedDays = [ ...this.state.workedDays ];
+        const pendingAmount = this.state.pendingAmount + 1;
+        const date = dateFormated();
+
+        const newWorkedDay = {
+            date,
+            isPaidOut: false,
+        }
+
+        for (let i = 0; i < workedDays.length; i++) {
+            const element = workedDays[i];
+            
+            if (date.includes(element.date)) {
+                Alert.alert("Erro", `O funcionário ${this.auxBricklayer.name} já bateu o ponto de hoje.`)
+
+                return;
+            }
+        }
+
+        workedDays.unshift(newWorkedDay);
+
+        this.setState({
+            workedDays,
+            pendingAmount,
+        });
+    }
+
     render() {
         return (
             <View style={[styles(this.props).container]}>
@@ -112,21 +148,37 @@ class Profile extends React.Component {
                         </View>
 
                         <ScrollView style={[styles(this.props).containerScroll]}>
-                            {this.renderWorkedDays(this.state.workedDays)}
-
-                            <Text style={[
-                                styles(this.props).textDate,
-                                styles(this.props).textAmount,
+                            <View style={[
+                                styles(this.props).containerButtonAddDay,
                                 {
-                                    color: this.getAmount() === 0 ? "#0A0" : "#F00"
+                                    marginBottom: this.state.workedDays.length === 0 ? 15 : 0,
                                 }
-                            ]}>{`Falta pagar: R$ ${this.getAmount().toFixed(2)}`}</Text>
+                            ]}>
+                                <TouchableOpacity
+                                    activeOpacity={.5}
+                                    onPress={() => this.addDay()}
+                                >
+                                    <IconFontAwesome
+                                        name="calendar-plus-o"
+                                        size={45}
+                                        color={commonStyles.colors.primary.dark}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            {this.renderWorkedDays(this.state.workedDays)}
                         </ScrollView>
+                        <Text style={[
+                            styles(this.props).textDate,
+                            styles(this.props).textAmount,
+                            {
+                                color: this.getAmount() === 0 ? "#0A0" : "#F00"
+                            }
+                        ]}>{`Falta pagar: R$ ${this.getAmount().toFixed(2)}`}</Text>
                     </View>
 
                     <View style={[styles(this.props).containerFooter]}>
                         <TouchableOpacity
-                            style={[styles(this.props).button]}
+                            style={[styles(this.props).buttonConfirm]}
                             onPress={() => this.onConfirm()}
                             activeOpacity={.5}
                         >
