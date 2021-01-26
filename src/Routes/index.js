@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import Navigation from "./Navigation";
 
+import commonStyles from "../commonStyles";
 import styles from "./styles";
 
 class Routes extends React.Component {
@@ -12,7 +13,7 @@ class Routes extends React.Component {
             <View style={[styles().container]}>
                 <StatusBar
                     barStyle="light-content"
-                    backgroundColor="#000000"
+                    backgroundColor={commonStyles.colors.primary.dark}
                 />
 
                 <NavigationContainer>

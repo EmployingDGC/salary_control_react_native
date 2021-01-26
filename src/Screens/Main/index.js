@@ -15,10 +15,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Icon from "react-native-vector-icons/FontAwesome";
 
+import { sleep } from "../../commonFunctions";
+
 import Bricklayers from "../../components/Main/Bricklayers";
 import Profile from "../../components/Main/Profile";
 import NewBricklayer from "../../components/Main/NewBricklayer";
 import Auth from "../../components/Main/Auth";
+import Loading from "../../components/Main/Loading";
 
 import banner from "../../../assets/images/banner.fw.png";
 
@@ -32,6 +35,7 @@ const initialState = {
     bricklayers: [],
     isOpenModalNewBricklayers: false,
     isOpenModalBricklayers: false,
+    isOpenModalLoading: false,
     isOpenModalAuth: false,
     isRoot: false,
     bricklayersIdModal: 0,
@@ -46,21 +50,49 @@ class Main extends React.Component {
             ...initialState,
         }
     }
+    
+    componentDidMount = () => {
+        this.loadOnStorege();
+    }
 
-    componentDidMount = async () => {
-        const stringStorage = await AsyncStorage.getItem(key)
+    loadOnStorege = async () => {
+        this.onToggleModalLoading();
+
+        const stringStorage = await AsyncStorage.getItem(key, this.onToggleModalLoading)
         
         const bricklayers = JSON.parse(stringStorage) || [];
 
         this.setState({
             bricklayers,
         });
+        
+        console.log(bricklayers);
+
+        return bricklayers;
     }
 
-    saveOnStorage = async () => {
-        const storage = JSON.stringify(this.state.bricklayers);
+    saveOnStorage = async (count) => {
+        if (count <= 0) {
+            return;
+        }
 
-        await AsyncStorage.setItem(key, storage);
+        this.onToggleModalLoading();
+
+        const stringStorage = JSON.stringify(this.state.bricklayers);
+
+        await AsyncStorage.setItem(key, stringStorage, this.onToggleModalLoading);
+
+        sleep(100);
+
+        this.saveOnStorage(count - 1);
+    }
+
+    onToggleModalLoading = () => {
+        const isOpenModalLoading = !this.state.isOpenModalLoading;
+
+        this.setState({
+            isOpenModalLoading,
+        });
     }
 
     onCloseModalNewBricklayers = () => {
@@ -104,7 +136,7 @@ class Main extends React.Component {
             bricklayers,
         });
 
-        this.saveOnStorage();
+        this.saveOnStorage(2);
 
         this.onCloseModalNewBricklayers();
     }
@@ -128,7 +160,7 @@ class Main extends React.Component {
             bricklayersIdModal: initialState.bricklayersIdModal,
         });
 
-        this.saveOnStorage();
+        this.saveOnStorage(2);
     }
 
     removeBricklayer = (id) => {
@@ -138,7 +170,9 @@ class Main extends React.Component {
 
         this.setState({
             bricklayers,
-        }, this.saveOnStorage);
+        });
+
+        this.saveOnStorage(2);
     }
 
     renderTrash = (id) => {
@@ -207,6 +241,14 @@ class Main extends React.Component {
     render() {
         return (
             <View style={[styles(this.props).container]}>
+                <Modal
+                    visible={this.state.isOpenModalLoading}
+                    transparent={true}
+                    animationType="fade"
+                >
+                    <Loading />
+                </Modal>
+                
                 <Modal
                     visible={this.state.isOpenModalAuth}
                     transparent={true}
