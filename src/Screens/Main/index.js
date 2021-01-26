@@ -65,8 +65,6 @@ class Main extends React.Component {
         this.setState({
             bricklayers,
         });
-        
-        console.log(bricklayers);
 
         return bricklayers;
     }
